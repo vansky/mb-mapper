@@ -1,4 +1,4 @@
-''' python model_paster.py [FILE1 FILE2 ..]
+''' python model_paster.py OUTPUT [FILE1 FILE2 ..]
 
 
 '''
@@ -6,12 +6,12 @@
 import pandas
 import sys
 
-assert len(sys.argv) > 2, "Need multiple model outputs to merge"
+assert len(sys.argv) > 3, "Need an output and multiple model outputs to merge"
 
 SEP = ' '
 GOOD_COLS = ('(surp)|(entropy)|(entred)|(conf)') 
-OUTPUT_NAME = 'naturalstories.full.results'
-output = pandas.read_csv(sys.argv[1],sep=SEP)
+OUTPUT_NAME = sys.argv[1] #'naturalstories.full.results'
+output = pandas.read_csv(sys.argv[2],sep=SEP)
 
 # Create initial dataframe that lacks the columns of interest but has sentpos, wlen, etc
 output = output.drop(output.filter(regex=GOOD_COLS).columns,errors="ignore",axis=1)
@@ -19,7 +19,7 @@ output = output.drop(output.filter(regex=GOOD_COLS).columns,errors="ignore",axis
 dfs = []
 
 
-for fname in sys.argv[1:]:
+for fname in sys.argv[2:]:
     df = pandas.read_csv(fname,sep=SEP)
     df = df.filter(regex=GOOD_COLS)
     df = df.add_prefix('.'.join(fname.split('/')[-1].split('.')[:-1])+'_')
