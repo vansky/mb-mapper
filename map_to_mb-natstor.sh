@@ -49,8 +49,7 @@ echo "Making mfields"
 cat ${naturalstories_dir}/naturalstories_RTS/all_stories.tok | sed 's/\t/ /g;s/``/'\''/g;s/'\'\''/'\''/g;s/(/-LRB-/g;s/)/-RRB-/g;s/peaked/peeked/g;' | python ${mb_location}/resource-rt/scripts/toks2sents.py genmodel/naturalstories.linetoks > genmodel/naturalstories.lineitems  
 
 echo "  Part 2"
-paste -d' ' <(cat ${naturalstories_dir}/naturalstories_RTS/all_stories.tok | sed 's/\t/ /g;s/peaked/peeked/g') <(cat genmodel/naturalstories.lineitems | python ${mb_location}/resource-rt/scripts/sents2sentids.py | cut -d' ' -f 2-) | \
-    paste -d' ' - <(cat ${naturalstories_dir}/naturalstories_RTS/all_stories.tok | sed 's/\t/ /g;' | awk -f ${mb_location}/resource-rt/scripts/filter_cols.awk -v cols=item - | python ${mb_location}/resource-rt/scripts/rename_cols.py item docid) > genmodel/naturalstories.mfields.itemmeasures  
+paste -d' ' <(cat ${naturalstories_dir}/naturalstories_RTS/all_stories.tok | sed 's/\t/ /g;s/peaked/peeked/g') <(cat genmodel/naturalstories.lineitems | python ${mb_location}/resource-rt/scripts/sents2sentids.py | cut -d' ' -f 2-) | paste -d' ' - <(cat ${naturalstories_dir}/naturalstories_RTS/all_stories.tok | sed 's/\t/ /g;' | awk -f ${mb_location}/resource-rt/scripts/filter_cols.awk -v cols=item - | python ${mb_location}/resource-rt/scripts/rename_cols.py item docid) > genmodel/naturalstories.mfields.itemmeasures  
 #rm genmodel/naturalstories.lineitems  
 
 echo "Combine with RTs"
