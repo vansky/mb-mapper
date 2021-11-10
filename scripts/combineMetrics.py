@@ -1,8 +1,8 @@
 import sys, argparse, operator, pandas as pd
 argparser = argparse.ArgumentParser('''
-Combines user-specified columns in space-delimited data table.
+Combines user-specified columns with user-specified functions in space-delimited data table.
 ''')
-argparser.add_argument('-f', '--columns', dest='f', nargs='+', action='store', help='Columns to combine. Format: -f col1,-,col2 col3,+,col4 -> col1-col2 col3+col4')
+argparser.add_argument('-f', '--functions', dest='f', nargs='+', action='store', help='Functions to generate new columns by combining old ones. Format: -f col1,-,col2 col3,+,col4 -> col1-col2 col3+col4')
 args, unknown = argparser.parse_known_args()
 
 def function_parser(func_string):
