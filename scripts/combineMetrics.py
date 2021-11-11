@@ -10,11 +10,15 @@ def function_parser(func_string):
                  '-':operator.sub,
                  '*':operator.mul,
                  '/':operator.truediv,
-                 '%':operator.mod}
+                 '%':operator.mod,
+                 '^':operator.pow}
     return(func_dict[func_string])
 
 data = pd.read_csv(sys.stdin, sep=' ', skipinitialspace=True)
 for colpair in args.f:
     col1,op,col2 = colpair.split(',')
-    data[str(col1)+str(op)+str(col2)] = function_parser(op)(data[col1],data[col2])
+    if op in ('^'):
+        data[str(col1)+str(op)+str(col2)] = function_parser(op)(data[col1],float(col2))
+    else:
+        data[str(col1)+str(op)+str(col2)] = function_parser(op)(data[col1],data[col2])
 data.to_csv(sys.stdout, sep=' ', index=False, na_rep='nan')
