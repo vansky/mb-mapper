@@ -1,5 +1,6 @@
 #!/bin/bash
-## Usage: map_to_mb.sh FILE1 FILE2 FILE3
+## Usage: map_to_mb.sh FILE1 FILE2 FILE3 ...
+### Combines measures from listed FILEs to generate a dataframe for regression
 
 naturalstories_dir=natstor
 scripts_dir=../replications/vanschijndel_linzen-2019-scil
@@ -52,10 +53,7 @@ echo "Making mfields"
 ### make genmodel/naturalstories.mfields.itemmeasures
 cat ${naturalstories_dir}/naturalstories_RTS/all_stories.tok | sed 's/\t/ /g;s/``/'\''/g;s/'\'\''/'\''/g;s/(/-LRB-/g;s/)/-RRB-/g;s/peaked/peeked/g;' | python ${mb_location}/resource-rt/scripts/toks2sents.py genmodel/naturalstories.linetoks > genmodel/naturalstories.lineitems  
 
-echo "  Part 2"
 paste -d' ' <(cat ${naturalstories_dir}/naturalstories_RTS/all_stories.tok | sed 's/\t/ /g;s/peaked/peeked/g') <(cat genmodel/naturalstories.lineitems | python ${mb_location}/resource-rt/scripts/sents2sentids.py | cut -d' ' -f 2-) | paste -d' ' - <(cat ${naturalstories_dir}/naturalstories_RTS/all_stories.tok | sed 's/\t/ /g;' | awk -f ${mb_location}/resource-rt/scripts/filter_cols.awk -v cols=item - | python ${mb_location}/resource-rt/scripts/rename_cols.py item docid) > genmodel/naturalstories.mfields.itemmeasures  
-#rm genmodel/naturalstories.lineitems  
-
 echo "Combine with RTs"
 ### combine with RTs
 paste -d' ' ${natstor_words} <(python ${mb_location}/resource-rt/scripts/filter_cols.py -x 'word' < ${df_full}.unigrams) | python ${mb_location}/resource-rt/scripts/roll_toks.py <(sed 's/(/-LRB-/g;s/)/-RRB-/g;' genmodel/naturalstories.mfields.itemmeasures) sentid sentpos > ${df_full}.models
@@ -67,6 +65,3 @@ python ${mb_location}/resource-naturalstories/scripts/merge_natstor.py <(cat ${n
 python ${mb_location}/resource-rt/scripts/spilloverMetrics.py < ${df_full}.models_rt ${spillover_cols} | python ${mb_location}/resource-rt/scripts/rm_unfix_items.py | python ${mb_location}/resource-rt/scripts/rm_na_items.py | grep -v '<unk>' | python scripts/combineMetrics.py -f ${combine_cols} > ${df_full}.models_rt_filtered
 
 python ${roll_removal_script} < ${df_full}.models_rt_filtered > ${df_full}.models_rt_filtered_noroll 
-
-#mkdir rdata  
-#mkdir results  
