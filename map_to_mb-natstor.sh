@@ -1,7 +1,11 @@
 #!/bin/bash
+## Usage: map_to_mb.sh FILE1 FILE2 FILE3
 
 naturalstories_dir=natstor
 scripts_dir=../replications/vanschijndel_linzen-2019-scil
+
+spillover_cols="wlen fixedunigram"
+combine_cols="model1_surp,-,model2_surp"
 
 ## Required paths
 ### modelblocks location
@@ -60,7 +64,7 @@ cut -d' ' -f2- ${df_full}.models  | paste -d' ' genmodel/naturalstories.mfields.
 
 python ${mb_location}/resource-naturalstories/scripts/merge_natstor.py <(cat ${naturalstories_dir}/naturalstories_RTS/processed_RTs.tsv | sed 's/\t/ /g;s/peaked/peeked/g;' | python ${mb_location}/resource-rt/scripts/rename_cols.py WorkerId subject RT fdur) ${df_full}.models_mergable | sed 's/``/'\''/g;s/'\'\''/'\''/g;s/(/-LRB-/g;s/)/-RRB-/g;' | python ${mb_location}/resource-rt/scripts/rename_cols.py item docid > ${df_full}.models_rt
 
-python ${mb_location}/resource-rt/scripts/rm_unfix_items.py < ${df_full}.models_rt | python ${mb_location}/resource-rt/scripts/rm_na_items.py | grep -v '<unk>'> ${df_full}.models_rt_filtered
+python ${mb_location}/resource-rt/scripts/spilloverMetrics.py < ${df_full}.models_rt ${spillover_cols} | python ${mb_location}/resource-rt/scripts/rm_unfix_items.py | python ${mb_location}/resource-rt/scripts/rm_na_items.py | grep -v '<unk>' | python scripts/combineMetrics.py -f ${combine_cols} > ${df_full}.models_rt_filtered
 
 python ${roll_removal_script} < ${df_full}.models_rt_filtered > ${df_full}.models_rt_filtered_noroll 
 
